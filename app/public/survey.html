@@ -5,7 +5,6 @@
   <meta charset="UTF-8">
   <title>Survey</title>
 
-  <!-- Latest compiled and minified CSS & JS -->
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
   <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.4.2/css/all.css" integrity="sha384-/rXc/GQVaYpyDdyxK+ecHPVYJSN9bmVFBvjA/9eOB+pb3F2w2N6fc5qB9Ew5yIns" crossorigin="anonymous">
   <script src="https://code.jquery.com/jquery.js"></script>
@@ -201,6 +200,26 @@
       </div>
     </div>
 
+    <div id="resultsModal" class="modal fade" role="dialog">
+      <div class="modal-dialog">
+
+        <!-- Modal content-->
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal">X</button>
+            <h2 class="modal-title"><strong>Your New Friend!</strong></h2>
+          </div>
+          <div class="modal-body">
+            <h2 id="matchName"></h2>
+            <img id="matchImg" src ="" alt="" height="350" width="300">
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" id="closeModal" data-dismiss="modal">Close</button>
+          </div>
+        </div>
+
+      </div>
+    </div>
 
     <footer class="footer">
       <div class="container">
@@ -214,17 +233,11 @@
 
 </html>
 
-<!-- BELOW CODE IS CRITICAL. IT HANDLES HOW FORM DATA IS SENT TO OUR SERVER -->
 <script type="text/javascript">
-  // In this code below we create the Front-end JavaScript which "POSTS" our form data to our express server.
-  // In essence, when the user hits submit, jQuery grabs all of the fields then sends a post request to our api
-  // Our api recognizes the route (/api/tables)... and then runs the associated code (found in api-routes.js).
-  // In this case the associated code "saves" the data to the table-data.js file or waitinglist-data.js file
 
   $(".submit").on("click", function(event) {
     event.preventDefault();
 
-    // Here we grab the form elements
     var newFriend = {
       name: $("#friend-name").val().trim(),
       photo: $("#friend-photo").val().trim(),
@@ -233,25 +246,13 @@
 
     console.log(newFriend);
 
-    // This line is the magic. It"s very similar to the standard ajax function we used.
-    // Essentially we give it a URL, we give it the object we want to send, then we have a "callback".
-    // The callback is the response of the server. In our case, we set up code in api-routes that "returns" true or false
-    // depending on if a tables is available or not.
-
     $.post("/api/friends", newFriend,
       function(data) {
 
-        // If a table is available... tell user they are booked.
-        if (data) {
-          alert("You are on your way to making friends!");
-        }
+        $("#matchName").text(data.name);
+        $('#matchImg').attr("src", data.photo);
+        $("#resultsModal").modal('toggle');
 
-        // If a table is available... tell user they on the waiting list.
-        else {
-          alert("Uh oh something went wrong! Please try again.");
-        }
-
-        // Clear the form when submitting
         $("#friend-name").val("");
         $("#friend-photo").val("");
         $("#q1-chosen").val("");
